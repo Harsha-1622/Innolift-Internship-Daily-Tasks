@@ -1,18 +1,18 @@
 # ==========================================
-# DAY 8 - HYPERPARAMETER TUNING
+# HYPERPARAMETER TUNING
 # Household Energy Consumption Forecaster
 # ==========================================
 
 import pandas as pd
 import numpy as np
 import joblib
-
 import matplotlib.pyplot as plt
 
 from sklearn.model_selection import (
     train_test_split,
     cross_val_score,
-    GridSearchCV
+    GridSearchCV,
+    RandomizedSearchCV
 )
 
 from sklearn.ensemble import GradientBoostingRegressor
@@ -51,12 +51,14 @@ numeric_columns = [
 ]
 
 for col in numeric_columns:
+
     df[col] = pd.to_numeric(
         df[col],
         errors='coerce'
     )
 
 for col in numeric_columns:
+
     df[col] = df[col].fillna(
         df[col].mean()
     )
@@ -108,7 +110,7 @@ print("X_train:", X_train.shape)
 print("X_test :", X_test.shape)
 
 # ==========================================
-# BASELINE MODEL
+# LOAD BASELINE MODEL
 # ==========================================
 
 print("\nLoading best_model.pkl...")
@@ -200,10 +202,10 @@ param_grid = {
 print("\nParameter Grid Created!")
 
 # ==========================================
-# GRID SEARCH
+# GRID SEARCH CV
 # ==========================================
 
-print("\nStarting Grid Search...")
+print("\nStarting GridSearchCV...")
 
 grid = GridSearchCV(
 
@@ -228,22 +230,105 @@ grid.fit(
     y_train
 )
 
-print("\n========== BEST PARAMETERS ==========\n")
+print("\n========== GRID SEARCH RESULTS ==========\n")
 
-print(
-    grid.best_params_
-)
+print("Best Parameters:")
+print(grid.best_params_)
 
-print(
-    "\nBest Score:",
-    grid.best_score_
-)
+print("\nBest Score:")
+print(grid.best_score_)
 
 # ==========================================
-# TUNED MODEL
+# RANDOMIZED SEARCH CV
 # ==========================================
 
-tuned_model = grid.best_estimator_
+print("\nStarting RandomizedSearchCV...")
+
+random_search = RandomizedSearchCV(
+
+    estimator=
+    GradientBoostingRegressor(
+        random_state=42
+    ),
+
+    param_distributions=
+    param_grid,
+
+    n_iter=10,
+
+    cv=5,
+
+    scoring=
+    'neg_mean_squared_error',
+
+    random_state=42,
+
+    n_jobs=-1
+)
+
+random_search.fit(
+    X_train,
+    y_train
+)
+
+print("\n========== RANDOMIZED SEARCH RESULTS ==========\n")
+
+print("Best Parameters:")
+print(random_search.best_params_)
+
+print("\nBest Score:")
+print(random_search.best_score_)
+
+# ==========================================
+# SEARCH METHOD COMPARISON
+# ==========================================
+
+grid_rmse = np.sqrt(
+    -grid.best_score_
+)
+
+random_rmse = np.sqrt(
+    -random_search.best_score_
+)
+
+search_comparison = pd.DataFrame({
+
+    "Method": [
+        "GridSearchCV",
+        "RandomizedSearchCV"
+    ],
+
+    "RMSE": [
+        grid_rmse,
+        random_rmse
+    ]
+})
+
+print("\n========== SEARCH METHOD COMPARISON ==========\n")
+
+print(search_comparison)
+
+# ==========================================
+# SELECT BEST SEARCH METHOD
+# ==========================================
+
+if grid_rmse < random_rmse:
+
+    tuned_model = grid.best_estimator_
+
+    best_method = "GridSearchCV"
+
+else:
+
+    tuned_model = random_search.best_estimator_
+
+    best_method = "RandomizedSearchCV"
+
+print("\nBest Search Method:", best_method)
+
+# ==========================================
+# TEST TUNED MODEL
+# ==========================================
 
 tuned_predictions = tuned_model.predict(
     X_test
@@ -267,7 +352,7 @@ tuned_r2 = r2_score(
 )
 
 # ==========================================
-# COMPARISON TABLE
+# BEFORE VS AFTER COMPARISON
 # ==========================================
 
 comparison = pd.DataFrame({
@@ -293,7 +378,7 @@ comparison = pd.DataFrame({
     ]
 })
 
-print("\n========== COMPARISON ==========\n")
+print("\n========== BEFORE VS AFTER ==========\n")
 
 print(comparison)
 
@@ -313,19 +398,12 @@ results = pd.DataFrame(
 )
 
 plt.figure(
-    figsize=(8, 5)
+    figsize=(8,5)
 )
 
 plt.plot(
-
-    results[
-        'param_n_estimators'
-    ],
-
-    -results[
-        'mean_test_score'
-    ],
-
+    results['param_n_estimators'],
+    -results['mean_test_score'],
     marker='o'
 )
 
@@ -368,38 +446,18 @@ print("\n========== FINAL RESULT ==========\n")
 
 if tuned_rmse < baseline_rmse:
 
-    print(
-        "Tuned Model is Better!"
-    )
+    print("Tuned Model is Better!")
 
 else:
 
-    print(
-        "Baseline Model is Better!"
-    )
+    print("Baseline Model is Better!")
 
-print(
-    "\nBaseline RMSE:",
-    round(baseline_rmse, 4)
-)
-
-print(
-    "Tuned RMSE:",
-    round(tuned_rmse, 4)
-)
-
-print(
-    "\nBest Parameters:"
-)
-
-print(
-    grid.best_params_
-)
-
-print(
-    "\nFiles Generated:"
-)
-
+print("\nBaseline RMSE:", round(baseline_rmse, 4))
+print("Tuned RMSE:", round(tuned_rmse, 4))
+print("Baseline R2:", round(baseline_r2, 4))
+print("Tuned R2:", round(tuned_r2, 4))
+print("\nBest Search Method:", best_method)
+print("\nFiles Generated:")
 print("comparison.csv")
 print("validation_curve.png")
 print("tuned_model.pkl")
