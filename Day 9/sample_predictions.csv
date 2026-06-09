@@ -1,0 +1,6 @@
+Sample,Predicted Power,Category,Advice
+1,1.163,Moderate Consumption,Power usage is within normal range.
+2,2.354,Moderate Consumption,Power usage is within normal range.
+3,0.231,Low Consumption,Power usage is low.
+4,4.397,High Consumption,Power usage is high. Consider saving energy.
+5,5.604,High Consumption,Power usage is high. Consider saving energy.
