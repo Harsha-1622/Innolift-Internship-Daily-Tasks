@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Student</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav>
+    <div class="logo">
+        <img src="{{ url_for('static', filename='images/veltech_logo.png') }}" alt="Vel Tech Logo">
+        <div>
+            <h2>Vel Tech University</h2>
+            <p>Student Registration System</p>
+        </div>
+    </div>
+
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/register">Register</a></li>
+        <li><a href="/students">Students</a></li>
+        <li><a href="/about">About</a></li>
+    </ul>
+</nav>
+
+<div class="form-container">
+
+    <h1>Student Registration Form</h1>
+
+    <form>
+
+        <input type="text" placeholder="Student Name" required>
+
+        <input type="text" placeholder="Roll Number" required>
+
+        <input type="text" placeholder="Department" required>
+
+        <input type="number" placeholder="Year" required>
+
+        <input type="email" placeholder="Email Address" required>
+
+        <input type="tel" placeholder="Phone Number" required>
+
+        <select required>
+            <option>Select Gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+        </select>
+
+        <textarea rows="4" placeholder="Address"></textarea>
+
+        <button type="submit">Register Student</button>
+
+    </form>
+
+</div>
+
+<footer>
+    <p>© 2026 Vel Tech University | Student Registration System</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav>
+    <div class="logo">
+        <img src="{{ url_for('static', filename='images/veltech_logo.png') }}" alt="Vel Tech Logo">
+        <div>
+            <h2>Vel Tech University</h2>
+            <p>Student Registration System</p>
+        </div>
+    </div>
+
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/register">Register</a></li>
+        <li><a href="/students">Students</a></li>
+        <li><a href="/about">About</a></li>
+    </ul>
+</nav>
+
+<div class="table-container">
+
+    <h1>Student Records</h1>
+
+    <table>
+
+        <tr>
+            <th>Roll No</th>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Year</th>
+        </tr>
+
+        <tr><td>27955</td><td>Arjun</td><td>IT</td><td>3</td></tr>
+        <tr><td>28565</td><td>Priya</td><td>CSE</td><td>2</td></tr>
+        <tr><td>29776</td><td>Rahul</td><td>ECE</td><td>4</td></tr>
+        <tr><td>27945</td><td>Harsha</td><td>CSE</td><td>3</td></tr>
+        <tr><td>27956</td><td>Kiran</td><td>IT</td><td>2</td></tr>
+        <tr><td>28566</td><td>Sneha</td><td>EEE</td><td>3</td></tr>
+        <tr><td>29777</td><td>Vijay</td><td>CSE</td><td>4</td></tr>
+        <tr><td>27946</td><td>Anjali</td><td>ECE</td><td>1</td></tr>
+        <tr><td>27957</td><td>Ravi</td><td>IT</td><td>2</td></tr>
+        <tr><td>23421</td><td>Pooja</td><td>CSE</td><td>3</td></tr>
+
+    </table>
+
+</div>
+
+<footer>
+    <p>© 2026 Vel Tech University | Student Registration System</p>
+</footer>
+
+</body>
+</html>
