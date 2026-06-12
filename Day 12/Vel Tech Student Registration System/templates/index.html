@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vel Tech Student Registration System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/veltech_logo.png') }}" alt="Vel Tech Logo">
+
+            <div>
+                <h2>Vel Tech University</h2>
+                <p>Student Registration System</p>
+            </div>
+        </div>
+
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/register">Register</a></li>
+            <li><a href="/students">Students</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+
+        <img src="{{ url_for('static', filename='images/veltech_logo.png') }}"
+             alt="Vel Tech Logo"
+             class="hero-logo">
+
+        <h1>Vel Tech Student Registration System</h1>
+
+        <p>
+            Vel Tech Rangarajan Dr. Sagunthala R&D Institute of Science and Technology
+        </p>
+
+        <p>
+            Department of Computer Science and Engineering (Data Science)
+        </p>
+
+        <a href="/register" class="btn">Register Now</a>
+
+    </section>
+
+    <!-- Welcome Section -->
+    <section class="card">
+
+        <h2>Welcome</h2>
+
+        <p>
+            This Student Registration System is developed using Flask, HTML, and CSS.
+            The application demonstrates Flask routing, template rendering,
+            responsive web design, and student data management concepts.
+        </p>
+
+    </section>
+
+    <!-- Features Section -->
+    <section class="card">
+
+        <h2>Key Features</h2>
+
+        <ul>
+            <li>Student Registration Form</li>
+            <li>Student Records Management</li>
+            <li>Flask Template Rendering</li>
+            <li>Responsive Navigation Bar</li>
+            <li>Professional User Interface Design</li>
+        </ul>
+
+    </section>
+
+    <!-- Footer -->
+    <footer>
+
+        <p>
+            Vel Tech Rangarajan Dr. Sagunthala R&D Institute of Science and Technology
+        </p>
+
+        <p>
+            Department of Computer Science and Engineering (Data Science)
+        </p>
+
+        <p>
+            © 2026 Student Registration System
+        </p>
+
+    </footer>
+
+</body>
+</html>

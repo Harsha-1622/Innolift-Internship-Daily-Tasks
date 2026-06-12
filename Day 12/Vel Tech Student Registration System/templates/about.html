@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Project</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav>
+    <div class="logo">
+        <img src="{{ url_for('static', filename='images/veltech_logo.png') }}" alt="Vel Tech Logo">
+        <div>
+            <h2>Vel Tech University</h2>
+            <p>Student Registration System</p>
+        </div>
+    </div>
+
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/register">Register</a></li>
+        <li><a href="/students">Students</a></li>
+        <li><a href="/about">About</a></li>
+    </ul>
+</nav>
+
+<section class="card">
+
+    <h1>Project Overview</h1>
+
+    <p>
+        The Student Registration System is a Flask-based web application
+        developed to demonstrate template rendering, routing,
+        responsive web design and navigation.
+    </p>
+
+    <h2>Features</h2>
+
+    <ul>
+        <li>Flask Routing</li>
+        <li>Student Registration Form</li>
+        <li>Student Records Table</li>
+        <li>Responsive Design</li>
+        <li>Professional User Interface</li>
+    </ul>
+
+    <h2>Team Information</h2>
+
+    <p>
+        Developed by CSE students as part of the  Web Development Innolift Internship.
+    </p>
+
+</section>
+
+<footer>
+    <p>© 2026 Vel Tech University | Student Registration System</p>
+</footer>
+
+</body>
+</html>
