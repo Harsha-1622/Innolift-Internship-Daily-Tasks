@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow p-5">
+
+        <h1>
+
+            Welcome,
+
+            {{ current_user.username }}
+
+            👋
+
+        </h1>
+
+        <hr>
+
+        <h4>
+
+            Email:
+
+            {{ current_user.email }}
+
+        </h4>
+
+        <br>
+
+        <div>
+
+            <a
+                href="/predict"
+                class="btn btn-primary">
+
+                Start Prediction
+
+            </a>
+
+            <a
+                href="/logout"
+                class="btn btn-danger">
+
+                Logout
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
