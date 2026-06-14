@@ -6,19 +6,35 @@
 
     <div class="row justify-content-center">
 
-        <div class="col-md-5">
+        <div class="col-md-6">
 
-            <div class="card shadow-lg p-4 rounded-4">
+            <div class="card shadow p-4">
 
                 <h2 class="text-center mb-4">
 
-                    Login
+                    Create Account
 
                 </h2>
 
                 <form
-                    action="/login"
+                    action="/register"
                     method="POST">
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Username
+
+                        </label>
+
+                        <input
+                            type="text"
+                            name="username"
+                            class="form-control"
+                            required>
+
+                    </div>
 
                     <div class="mb-3">
 
@@ -52,25 +68,39 @@
 
                     </div>
 
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Confirm Password
+
+                        </label>
+
+                        <input
+                            type="password"
+                            name="confirm_password"
+                            class="form-control"
+                            required>
+
+                    </div>
+
                     <button
                         type="submit"
-                        class="btn btn-success w-100">
+                        class="btn btn-primary w-100">
 
-                        Login
+                        Register
 
                     </button>
 
                 </form>
 
-                <hr>
+                <p class="text-center mt-3">
 
-                <p class="text-center mt-4">
+                    Already have an account?
 
-                    Don't have an account?
+                    <a href="/login">
 
-                    <a href="/register">
-
-                        Register
+                        Login
 
                     </a>
 
