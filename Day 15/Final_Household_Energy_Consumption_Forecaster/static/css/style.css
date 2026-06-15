@@ -1,0 +1,1451 @@
+/* ======================================
+BODY
+====================================== */
+
+body{
+
+    background-color: #f4f6f9;
+
+    margin: 0;
+
+    padding-top: 90px;
+
+    overflow-x: hidden;
+
+}
+
+/* ======================================
+HEADINGS
+====================================== */
+
+h1{
+
+    color: #0d6efd;
+
+    font-weight: bold;
+
+}
+
+/* ======================================
+FOOTER
+====================================== */
+
+footer{
+
+    width: 100%;
+
+}
+
+/* ======================================
+NAVBAR
+====================================== */
+
+.custom-navbar{
+
+    background:
+
+    linear-gradient(
+
+        to right,
+
+        rgba(15,23,42,0.95),
+
+        rgba(30,41,59,0.95)
+
+    );
+
+    backdrop-filter: blur(20px);
+
+    box-shadow:
+
+    0px 4px 20px rgba(
+
+        0,
+
+        0,
+
+        0,
+
+        0.3
+
+    );
+
+}
+
+/* ======================================
+LOGO
+====================================== */
+
+.navbar-brand{
+
+    color: white !important;
+
+    font-size: 1.8rem;
+
+    font-weight: bold;
+
+}
+
+/* ======================================
+NAV LINKS
+====================================== */
+
+.nav-link{
+
+    color: white !important;
+
+    font-weight: 500;
+
+    margin-left: 15px;
+
+    transition: 0.3s;
+
+}
+
+.nav-link:hover{
+
+    color: #60A5FA !important;
+
+}
+/* ======================================
+HOME PAGE HERO SECTION
+====================================== */
+
+.hero-section{
+
+    background:
+
+    linear-gradient(
+
+        rgba(0,0,0,0.20),
+
+        rgba(0,0,0,0.35)
+
+    ),
+
+    url("../images/tesla.avif");
+
+    background-size: cover;
+
+    background-position: center;
+
+    background-repeat: no-repeat;
+
+    width: 100%;
+
+    height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+}
+
+/* ======================================
+HERO OVERLAY
+====================================== */
+
+.hero-overlay{
+
+    text-align: center;
+
+    color: white;
+
+}
+
+.hero-overlay h5{
+
+    font-size: 30px;
+
+    font-weight: 500;
+
+}
+
+.hero-overlay h1{
+
+    font-size: 80px;
+
+    font-weight: 700;
+
+}
+
+.hero-overlay p{
+
+    font-size: 22px;
+
+    margin-top: 20px;
+
+    margin-bottom: 40px;
+
+}
+
+/* ======================================
+GLASSMORPHISM CONTENT CARD
+====================================== */
+
+.hero-content{
+
+    width: 50%;
+
+    max-width: 800px;
+
+    color: white;
+
+    background:
+
+    rgba(
+
+        15,
+
+        23,
+
+        42,
+
+        0.55
+
+    );
+
+    backdrop-filter: blur(14px);
+
+    border:
+
+    1px solid rgba(
+
+        255,
+
+        255,
+
+        255,
+
+        0.15
+
+    );
+
+    border-radius: 25px;
+
+    padding: 45px;
+
+    box-shadow:
+
+    0 8px 32px rgba(
+
+        0,
+
+        0,
+
+        0,
+
+        0.5
+
+    );
+
+}
+
+.hero-content h1{
+
+    color: white;
+
+    font-size: 65px;
+
+    font-weight: 800;
+
+    line-height: 1.1;
+
+}
+
+.hero-content h3{
+
+    color: #FFD166;
+
+    margin-top: 20px;
+
+    margin-bottom: 25px;
+
+}
+
+.hero-content p{
+
+    color: #E5E7EB;
+
+    font-size: 20px;
+
+    margin-bottom: 40px;
+
+}
+
+/* ======================================
+HERO BUTTONS
+====================================== */
+
+.hero-buttons{
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 20px;
+
+}
+
+.hero-buttons .btn{
+
+    width: 220px;
+
+    border-radius: 50px;
+
+    font-size: 18px;
+
+    padding: 12px;
+
+}
+/* ======================================
+PRIMARY BUTTON
+====================================== */
+
+.btn-primary{
+
+    background:
+
+    linear-gradient(
+
+        135deg,
+
+        #16A34A,
+
+        #22C55E
+
+    );
+
+    border: none;
+
+    border-radius: 50px;
+
+    padding: 14px 40px;
+
+    font-size: 17px;
+
+    font-weight: 600;
+
+}
+
+.btn-primary:hover{
+
+    background:
+
+    linear-gradient(
+
+        135deg,
+
+        #15803D,
+
+        #16A34A
+
+    );
+
+    transform: translateY(-3px);
+
+    transition: 0.3s;
+
+}
+
+/* ======================================
+SUCCESS BUTTON
+====================================== */
+
+.btn-success{
+
+    border-radius: 50px;
+
+}
+
+/* ======================================
+DANGER BUTTON
+====================================== */
+
+.btn-danger{
+
+    border-radius: 50px;
+
+}
+
+/* ======================================
+DARK BUTTON
+====================================== */
+
+.btn-dark{
+
+    border-radius: 50px;
+
+}
+
+/* ======================================
+CARDS
+====================================== */
+
+.card{
+
+    border: none;
+
+    border-radius: 25px;
+
+    transition: 0.3s;
+
+    overflow: hidden;
+
+}
+
+/* ======================================
+CARD HOVER EFFECT
+====================================== */
+
+.card:hover{
+
+    transform: translateY(-8px);
+
+    box-shadow:
+
+    0px 15px 40px rgba(
+
+        0,
+
+        0,
+
+        0,
+
+        0.2
+
+    );
+
+}
+
+/* ======================================
+ROUNDED CORNERS
+====================================== */
+
+.rounded-4{
+
+    border-radius: 25px !important;
+
+}
+
+/* ======================================
+CONTAINER SPACING
+====================================== */
+
+.container{
+
+    padding-top: 20px;
+
+}
+
+/* ======================================
+TABLE HOVER
+====================================== */
+
+.table-hover tbody tr:hover{
+
+    background-color:
+
+    rgba(
+
+        59,
+
+        130,
+
+        246,
+
+        0.1
+
+    );
+
+    transition: 0.3s;
+
+}
+/* ======================================
+ABOUT PAGE HERO SECTION
+====================================== */
+
+.about-hero{
+
+    height: 100vh;
+
+    background:
+
+    linear-gradient(
+
+        rgba(0,0,0,0.6),
+
+        rgba(0,0,0,0.6)
+
+    ),
+
+    url("../images/about.jpg");
+
+    background-size: cover;
+
+    background-position: center;
+
+    background-repeat: no-repeat;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+    color: white;
+
+}
+
+/* ======================================
+ABOUT CONTENT
+====================================== */
+
+.about-content{
+
+    max-width: 850px;
+
+}
+
+.about-content h1{
+
+    color: white;
+
+    font-size: 4rem;
+
+    font-weight: bold;
+
+}
+
+.about-content p{
+
+    font-size: 1.3rem;
+
+    margin-top: 25px;
+
+    color: #E5E7EB;
+
+}
+
+/* ======================================
+ABOUT CARDS
+====================================== */
+
+.about-card{
+
+    background: white;
+
+    border-radius: 25px;
+
+    padding: 30px;
+
+    box-shadow:
+
+    0px 10px 30px rgba(
+
+        0,
+
+        0,
+
+        0,
+
+        0.15
+
+    );
+
+    transition: 0.3s;
+
+}
+
+.about-card:hover{
+
+    transform: translateY(-8px);
+
+}
+
+.about-card h3{
+
+    color: #0F172A;
+
+    margin-bottom: 20px;
+
+}
+
+.about-card p{
+
+    color: #64748B;
+
+    line-height: 1.8;
+
+}
+/* ======================================
+PROFILE PAGE
+====================================== */
+
+.profile-banner{
+
+    height: 60vh;
+
+    background:
+
+    linear-gradient(
+
+        rgba(0,0,0,0.75),
+
+        rgba(0,0,0,0.75)
+
+    ),
+
+    url("../images/profile.jpg");
+
+    background-size: cover;
+
+    background-position: center;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+    border-radius: 30px;
+
+    color: white;
+
+}
+
+/* ======================================
+PROFILE TEXT
+====================================== */
+
+.profile-overlay h1{
+
+    color: white;
+
+    font-size: 4rem;
+
+    font-weight: bold;
+
+}
+
+.profile-overlay h4{
+
+    margin-top: 20px;
+
+    color: #D1D5DB;
+
+}
+
+/* ======================================
+PROFILE STATISTICS CARDS
+====================================== */
+
+.profile-card{
+
+    background: white;
+
+    border-radius: 25px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    box-shadow:
+
+    0px 10px 30px rgba(
+
+        0,
+
+        0,
+
+        0,
+
+        0.15
+
+    );
+
+    transition: 0.3s;
+
+}
+
+.profile-card:hover{
+
+    transform: translateY(-8px);
+
+}
+
+.profile-card h5{
+
+    color: #64748B;
+
+}
+
+.profile-card h1{
+
+    color: #0F172A;
+
+    font-weight: bold;
+
+}
+/* ======================================
+HISTORY PAGE
+====================================== */
+
+.history-banner{
+
+    height: 35vh;
+
+    background:
+
+    linear-gradient(
+
+        rgba(0,0,0,0.7),
+
+        rgba(0,0,0,0.7)
+
+    ),
+
+    url("../images/history.jpg");
+
+    background-size: cover;
+
+    background-position: center;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+    border-radius: 30px;
+
+    color: white;
+
+}
+
+/* ======================================
+SEARCH BOX
+====================================== */
+
+#searchInput{
+
+    border-radius: 50px;
+
+    padding: 15px 25px;
+
+    border: none;
+
+    box-shadow:
+
+    0px 5px 20px rgba(
+
+        0,
+
+        0,
+
+        0,
+
+        0.1
+
+    );
+
+}
+
+/* ======================================
+TABLE
+====================================== */
+
+.table{
+
+    border-radius: 25px;
+
+    overflow: hidden;
+
+}
+
+.table thead{
+
+    background:
+
+    linear-gradient(
+
+        to right,
+
+        #0F172A,
+
+        #1E293B
+
+    );
+
+    color: white;
+
+}
+
+.table th{
+
+    padding: 18px;
+
+}
+
+.table td{
+
+    vertical-align: middle;
+
+}
+
+/* ======================================
+BADGES
+====================================== */
+
+.badge{
+
+    padding: 10px 15px;
+
+    border-radius: 50px;
+
+    font-size: 14px;
+
+}
+
+/* ======================================
+DELETE BUTTON
+====================================== */
+
+.btn-outline-danger{
+
+    border-radius: 50px;
+
+    transition: 0.3s;
+
+}
+
+.btn-outline-danger:hover{
+
+    transform: translateY(-2px);
+
+}
+
+/* ======================================
+ROW HOVER
+====================================== */
+
+.table-hover tbody tr:hover{
+
+    background:
+
+    rgba(
+
+        96,
+
+        165,
+
+        250,
+
+        0.1
+
+    );
+
+}
+/* ======================================
+ANALYTICS PAGE
+====================================== */
+
+.analytics-banner{
+
+    height: 40vh;
+
+    background:
+
+    linear-gradient(
+
+        rgba(0,0,0,0.75),
+
+        rgba(0,0,0,0.75)
+
+    ),
+
+    url("../images/analytics.jpg");
+
+    background-size: cover;
+
+    background-position: center;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+    color: white;
+
+    border-radius: 30px;
+
+}
+
+/* ======================================
+ANALYTICS TEXT
+====================================== */
+
+.analytics-banner h1{
+
+    color: white;
+
+    font-size: 4rem;
+
+    font-weight: bold;
+
+}
+
+.analytics-banner p{
+
+    color: #E5E7EB;
+
+    font-size: 20px;
+
+}
+
+/* ======================================
+STATISTICS CARDS
+====================================== */
+
+.analytics-card{
+
+    background: white;
+
+    border-radius: 25px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    box-shadow:
+
+    0px 10px 30px rgba(
+
+        0,
+
+        0,
+
+        0,
+
+        0.15
+
+    );
+
+    transition: 0.3s;
+
+}
+
+.analytics-card:hover{
+
+    transform: translateY(-8px);
+
+}
+
+.analytics-card h4{
+
+    color: #64748B;
+
+}
+
+.analytics-card h2{
+
+    color: #0F172A;
+
+    font-weight: bold;
+
+}
+
+/* ======================================
+CHART CARDS
+====================================== */
+
+.chart-card{
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 25px;
+
+    box-shadow:
+
+    0px 10px 30px rgba(
+
+        0,
+
+        0,
+
+        0,
+
+        0.15
+
+    );
+
+}
+/* ======================================
+PREDICT PAGE
+====================================== */
+
+.predict-banner{
+
+    height: 40vh;
+
+    background:
+
+    linear-gradient(
+
+        rgba(0,0,0,0.75),
+
+        rgba(0,0,0,0.75)
+
+    ),
+
+    url("../images/predict.jpg");
+
+    background-size: cover;
+
+    background-position: center;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+    color: white;
+
+    border-radius: 30px;
+
+}
+
+/* ======================================
+PREDICT TEXT
+====================================== */
+
+.predict-banner h1{
+
+    color: white;
+
+    font-size: 4rem;
+
+    font-weight: bold;
+
+}
+
+.predict-banner p{
+
+    color: #E5E7EB;
+
+    font-size: 20px;
+
+}
+
+/* ======================================
+INPUT CARD
+====================================== */
+
+.predict-card{
+
+    background: white;
+
+    border-radius: 25px;
+
+    padding: 35px;
+
+    box-shadow:
+
+    0px 10px 30px rgba(
+
+        0,
+
+        0,
+
+        0,
+
+        0.15
+
+    );
+
+}
+
+/* ======================================
+INPUT FIELDS
+====================================== */
+
+.form-control{
+
+    border-radius: 15px;
+
+    padding: 15px;
+
+}
+
+/* ======================================
+RESULT CARD
+====================================== */
+
+.result-card{
+
+    border-radius: 25px;
+
+    padding: 35px;
+
+    background: white;
+
+    box-shadow:
+
+    0px 10px 30px rgba(
+
+        0,
+
+        0,
+
+        0,
+
+        0.15
+
+    );
+
+}
+
+/* ======================================
+RESULT COLORS
+====================================== */
+
+.low-card{
+
+    background: #DCFCE7;
+
+}
+
+.moderate-card{
+
+    background: #FEF3C7;
+
+}
+
+.high-card{
+
+    background: #FEE2E2;
+
+}
+/* ======================================
+RESPONSIVE DESIGN
+====================================== */
+
+@media(max-width:992px){
+
+    .hero-content{
+
+        width:80%;
+
+    }
+
+    .hero-content h1{
+
+        font-size:50px;
+
+    }
+
+    .hero-overlay h1{
+
+        font-size:60px;
+
+    }
+
+    .profile-overlay h1{
+
+        font-size:3rem;
+
+    }
+
+    .analytics-banner h1{
+
+        font-size:3rem;
+
+    }
+
+    .predict-banner h1{
+
+        font-size:3rem;
+
+    }
+
+    .about-content h1{
+
+        font-size:3rem;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .hero-content{
+
+        width:95%;
+
+        padding:30px;
+
+    }
+
+    .hero-content h1{
+
+        font-size:40px;
+
+    }
+
+    .hero-overlay h1{
+
+        font-size:45px;
+
+    }
+
+    .hero-overlay p{
+
+        font-size:18px;
+
+    }
+
+    .hero-buttons{
+
+        flex-direction:column;
+
+        align-items:center;
+
+    }
+
+    .hero-buttons .btn{
+
+        width:100%;
+
+    }
+
+    .profile-banner{
+
+        height:40vh;
+
+    }
+
+    .analytics-banner{
+
+        height:30vh;
+
+    }
+
+    .predict-banner{
+
+        height:30vh;
+
+    }
+
+    .about-hero{
+
+        height:80vh;
+
+    }
+
+    .about-content h1{
+
+        font-size:2.5rem;
+
+    }
+
+}
+
+@media(max-width:576px){
+
+    .hero-overlay h1{
+
+        font-size:35px;
+
+    }
+
+    .hero-overlay p{
+
+        font-size:16px;
+
+    }
+
+    .profile-overlay h1{
+
+        font-size:2rem;
+
+    }
+
+    .analytics-banner h1{
+
+        font-size:2rem;
+
+    }
+
+    .predict-banner h1{
+
+        font-size:2rem;
+
+    }
+
+    .about-content h1{
+
+        font-size:2rem;
+
+    }
+
+}
+.profile-image{
+
+    width:180px;
+
+    height:180px;
+
+    object-fit:cover;
+
+    border-radius:50%;
+
+    border:
+
+    5px solid white;
+
+    box-shadow:
+
+    0px 10px 30px rgba(
+
+        0,
+
+        0,
+
+        0,
+
+        0.4
+
+    );
+
+}
+/* ======================================
+DARK MODE
+====================================== */
+
+.dark-mode{
+
+    background-color:
+
+    #0F172A;
+
+    color:
+
+    white;
+
+}
+
+.dark-mode .card{
+
+    background-color:
+
+    #1E293B;
+
+    color:
+
+    white;
+
+}
+
+.dark-mode h1,
+
+.dark-mode h2,
+
+.dark-mode h3,
+
+.dark-mode h4,
+
+.dark-mode h5{
+
+    color:
+
+    white;
+
+}
+
+.dark-mode .table{
+
+    color:
+
+    white;
+
+}
+
+.dark-mode .table thead{
+
+    background:
+
+    #111827;
+
+}
+
+.dark-mode .form-control{
+
+    background:
+
+    #1E293B;
+
+    color:
+
+    white;
+
+    border:
+
+    1px solid #475569;
+
+}
+
+.dark-mode .form-control::placeholder{
+
+    color:
+
+    #CBD5E1;
+
+}
+
+.dark-mode .chart-card{
+
+    background:
+
+    #1E293B;
+
+}
+
+.dark-mode .analytics-card{
+
+    background:
+
+    #1E293B;
+
+}
+
+.dark-mode .predict-card{
+
+    background:
+
+    #1E293B;
+
+}
+
+.dark-mode .result-card{
+
+    background:
+
+    #1E293B;
+
+}

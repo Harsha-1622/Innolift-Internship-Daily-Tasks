@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Analytics Banner -->
+
+<div class="analytics-banner">
+
+    <div>
+
+        <h1>
+
+            Analytics Dashboard
+
+        </h1>
+
+        <p>
+
+            Monitor energy usage patterns and insights.
+
+        </p>
+
+    </div>
+
+</div>
+
+<div class="container mt-5">
+
+    <!-- Statistics Cards -->
+
+    <div class="row g-4">
+
+        <div class="col-md-4">
+
+            <div class="analytics-card">
+
+                <h4>
+
+                    Total Predictions
+
+                </h4>
+
+                <h2>
+
+                    {{ total_predictions }}
+
+                </h2>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="analytics-card">
+
+                <h4>
+
+                    Average Consumption
+
+                </h4>
+
+                <h2>
+
+                    {{ average_consumption }}
+
+                </h2>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="analytics-card">
+
+                <h4>
+
+                    Highest Consumption
+
+                </h4>
+
+                <h2>
+
+                    {{ highest_consumption }}
+
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <br>
+
+    <div class="row g-4">
+
+        <div class="col-md-6">
+
+            <div class="analytics-card">
+
+                <h4>
+
+                    Lowest Consumption
+
+                </h4>
+
+                <h2>
+
+                    {{ lowest_consumption }}
+
+                </h2>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="analytics-card">
+
+                <h4>
+
+                    High Consumption %
+
+                </h4>
+
+                <h2>
+
+                    {{ high_percentage }} %
+
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <br>
+
+    <!-- Pie Chart -->
+
+    <div class="chart-card">
+
+        <h3>
+
+            Consumption Category Distribution
+
+        </h3>
+
+        <hr>
+
+        {{ pie_chart | safe }}
+
+    </div>
+
+    <br>
+
+    <!-- Bar Chart -->
+
+    <div class="chart-card">
+
+        <h3>
+
+            Top 10 Highest Consumption Records
+
+        </h3>
+
+        <hr>
+
+        {{ bar_chart | safe }}
+
+    </div>
+
+    <br>
+
+    <!-- Line Chart -->
+
+    <div class="chart-card">
+
+        <h3>
+
+            Weekly Average Consumption Trend
+
+        </h3>
+
+        <hr>
+
+        {{ line_chart | safe }}
+
+    </div>
+
+</div>
+
+{% endblock %}
