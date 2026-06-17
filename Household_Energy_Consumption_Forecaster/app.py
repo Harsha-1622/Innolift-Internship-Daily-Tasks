@@ -126,7 +126,10 @@ def test_email():
 # LOAD MODEL
 # ==========================================
 
-model = joblib.load("models/final_model.pkl")
+def load_model():
+    return joblib.load(
+        "models/final_model.pkl"
+    )
 
 # ==========================================
 # LOGIN MANAGER
@@ -747,7 +750,7 @@ def predict():
                 }
             ]
         )
-
+        model = load_model()
         prediction = round(model.predict(sample)[0], 3)
 
         if prediction < 1:
