@@ -7,7 +7,6 @@ import os
 
 from dotenv import load_dotenv
 import os
-import resend
 from flask import session
 import random
 load_dotenv()
@@ -46,7 +45,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import csv
 
 from flask import make_response
-
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
 # ==========================================
 # DATABASE INITIALIZATION
 # ==========================================
@@ -134,49 +134,93 @@ app.config["UPLOAD_FOLDER"] = "static/uploads"
 
 app.secret_key = os.getenv("SECRET_KEY")
 # ==========================================
-# TEST RESEND EMAIL
+# SEND OTP EMAIL USING BREVO API
 # ==========================================
 
-@app.route("/test_email")
-def test_email():
+def send_otp_email(receiver_email, username, otp):
 
-    resend.api_key = os.getenv(
-        "RESEND_API_KEY"
+    configuration = sib_api_v3_sdk.Configuration()
+
+    configuration.api_key["api-key"] = os.getenv(
+        "BREVO_API_KEY"
+    )
+
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+
+        sib_api_v3_sdk.ApiClient(
+            configuration
+        )
+
+    )
+
+    sender = {
+
+        "name": "Energy Forecaster",
+
+        "email": "vtu27945@veltech.edu.in"
+
+    }
+
+    to = [
+
+        {
+
+            "email": receiver_email,
+
+            "name": username
+
+        }
+
+    ]
+
+    subject = "Email Verification OTP"
+
+    html_content = f"""
+
+    <h2>Hello {username},</h2>
+
+    <p>Your OTP for registration is:</p>
+
+    <h1>{otp}</h1>
+
+    <p>Please enter this OTP to complete your registration.</p>
+
+    """
+
+    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+
+        to=to,
+
+        sender=sender,
+
+        subject=subject,
+
+        html_content=html_content
+
     )
 
     try:
 
-        params = {
-            "from": "onboarding@resend.dev",
-            "to": ["vtu27945@veltech.edu.in"],
-            "subject": "Test Email",
-            "html": """
-            <h1>Hello!</h1>
-            <p>This email was sent using Resend.</p>
-            """
-        }
+        api_instance.send_transac_email(
 
-        email = resend.Email.send(
-            params
+            send_smtp_email
+
         )
 
-        return f"Email Sent Successfully! {email}"
+        return True
 
-    except Exception as e:
+    except ApiException as e:
 
-        return f"Error: {e}"
-@app.route("/debug_resend")
-def debug_resend():
+        print(
 
-    import resend
+            "Brevo Error:",
 
-    return f"""
-    File: {resend.__file__}
-    <br><br>
-    Contents:
-    <br>
-    {'<br>'.join(dir(resend))}
-    """
+            e
+
+        )
+
+        return False
+
 # ==========================================
 # LOAD MODEL
 # ==========================================
@@ -301,15 +345,12 @@ def register():
             return redirect(url_for("register"))
 
         if password != confirm_password:
-
             flash("Passwords do not match!")
-
             return redirect(url_for("register"))
 
         # Check whether email already exists
 
         connection = sqlite3.connect("database.db")
-
         cursor = connection.cursor()
 
         cursor.execute(
@@ -326,9 +367,7 @@ def register():
         connection.close()
 
         if existing_user:
-
             flash("Email already registered!")
-
             return redirect(url_for("register"))
 
         # Generate OTP
@@ -342,42 +381,28 @@ def register():
         session["email"] = email
         session["password"] = password
 
-        # Send OTP email using Resend
+        # Send OTP email using Brevo API
 
-        resend.api_key = os.getenv(
-            "RESEND_API_KEY"
+        success = send_otp_email(
+
+            email,
+
+            username,
+
+            otp
+
         )
 
-        try:
-
-            resend.Emails.send({
-
-                "from": "onboarding@resend.dev",
-
-                "to": email,
-
-                "subject": "Email Verification",
-
-                "html": f"""
-                <h2>Hello {username},</h2>
-
-                <p>Your OTP for registration is:</p>
-
-                <h1>{otp}</h1>
-
-                <p>Please enter this OTP to complete your registration.</p>
-                """
-
-            })
+        if success:
 
             flash(
                 "OTP sent successfully!"
             )
 
-        except Exception as e:
+        else:
 
             flash(
-                f"Failed to send OTP: {e}"
+                "Failed to send OTP!"
             )
 
             return redirect(
@@ -395,7 +420,6 @@ def register():
     return render_template(
         "register.html"
     )
-
 # ==========================================
 # VERIFY OTP
 # ==========================================
