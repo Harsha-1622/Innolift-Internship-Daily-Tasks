@@ -317,11 +317,13 @@ def register():
         # Check whether email already exists
 
         connection = sqlite3.connect("database.db")
+
         cursor = connection.cursor()
 
         cursor.execute(
             """
-            SELECT * FROM users
+            SELECT *
+            FROM users
             WHERE email = ?
             """,
             (email,)
@@ -368,21 +370,24 @@ Your OTP for registration is:
 Please enter this OTP to complete your registration.
 """
 
-        #mail.send(msg)
+        # TEMPORARILY DISABLED
+        # mail.send(msg)
 
         print("OTP =", otp)
 
-    flash(
-        f"OTP generated successfully: {otp}"
-    )
-
-    return redirect(
-        url_for(
-            "verify_otp"
+        flash(
+            f"OTP generated successfully! OTP = {otp}"
         )
-    )
 
-    return render_template("register.html")
+        return redirect(
+            url_for(
+                "verify_otp"
+            )
+        )
+
+    return render_template(
+        "register.html"
+    )
 
 # ==========================================
 # VERIFY OTP
