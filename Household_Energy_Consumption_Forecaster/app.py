@@ -77,7 +77,7 @@ app = Flask(__name__)
 init_db()
 app.config["UPLOAD_FOLDER"] = "static/uploads"
 
-app.secret_key = "9xK7@qL2#pR8!mN5$wT1^cV6&zY4*eA"
+app.secret_key = os.getenv("SECRET_KEY")
 
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 587
