@@ -170,7 +170,13 @@ def debug_resend():
 
     import resend
 
-    return "<br>".join(dir(resend))
+    return f"""
+    File: {resend.__file__}
+    <br><br>
+    Contents:
+    <br>
+    {'<br>'.join(dir(resend))}
+    """
 # ==========================================
 # LOAD MODEL
 # ==========================================
