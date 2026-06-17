@@ -7,12 +7,11 @@ import os
 
 from dotenv import load_dotenv
 import os
-
+import resend
 from flask import session
 import random
 load_dotenv()
 
-from flask_mail import Mail, Message
 
 from werkzeug.utils import secure_filename
 import sqlite3
@@ -134,57 +133,40 @@ init_db()
 app.config["UPLOAD_FOLDER"] = "static/uploads"
 
 app.secret_key = os.getenv("SECRET_KEY")
-
-app.config["MAIL_SERVER"] = "smtp-relay.brevo.com"
-app.config["MAIL_PORT"] = 587
-app.config["MAIL_USE_TLS"] = True
-app.config["MAIL_TIMEOUT"] = 10
-app.config["MAIL_DEBUG"] = True
-
-app.config["MAIL_USERNAME"] = os.getenv(
-    "MAIL_USERNAME"
-)
-
-app.config["MAIL_PASSWORD"] = os.getenv(
-    "MAIL_PASSWORD"
-)
-
-app.config["MAIL_DEFAULT_SENDER"] = os.getenv(
-    "MAIL_USERNAME"
-)
-
-mail = Mail(app)
-
 # ==========================================
-# TEST EMAIL
+# TEST RESEND EMAIL
 # ==========================================
 
 @app.route("/test_email")
 def test_email():
 
-    msg = Message(
-
-        subject="Test Email",
-
-        recipients=[
-
-            "vtu27945@veltech.edu.in"
-
-        ]
-
+    resend.api_key = os.getenv(
+        "RESEND_API_KEY"
     )
-
-    msg.body = "Hello from Flask!"
 
     try:
 
-        mail.send(msg)
+        resend.Emails.send({
+
+            "from": "onboarding@resend.dev",
+
+            "to": "harshabhogaraju@gmail.com",
+
+            "subject": "Test Email",
+
+            "html": """
+            <h1>Hello!</h1>
+            <p>This email is sent using Resend.</p>
+            """
+
+        })
 
         return "Email Sent Successfully!"
 
     except Exception as e:
 
-        return f"Email Error: {str(e)}"
+        return f"Error: {e}"
+
 # ==========================================
 # LOAD MODEL
 # ==========================================
@@ -350,34 +332,49 @@ def register():
         session["email"] = email
         session["password"] = password
 
-        # Send OTP email
+        # Send OTP email using Resend
 
-        msg = Message(
-
-            subject="Email Verification",
-
-            recipients=[email]
-
+        resend.api_key = os.getenv(
+            "RESEND_API_KEY"
         )
 
-        msg.body = f"""
-Hello {username},
+        try:
 
-Your OTP for registration is:
+            resend.Emails.send({
 
-{otp}
+                "from": "onboarding@resend.dev",
 
-Please enter this OTP to complete your registration.
-"""
+                "to": email,
 
-        # TEMPORARILY DISABLED
-        # mail.send(msg)
+                "subject": "Email Verification",
 
-        print("OTP =", otp)
+                "html": f"""
+                <h2>Hello {username},</h2>
 
-        flash(
-            f"OTP generated successfully! OTP = {otp}"
-        )
+                <p>Your OTP for registration is:</p>
+
+                <h1>{otp}</h1>
+
+                <p>Please enter this OTP to complete your registration.</p>
+                """
+
+            })
+
+            flash(
+                "OTP sent successfully!"
+            )
+
+        except Exception as e:
+
+            flash(
+                f"Failed to send OTP: {e}"
+            )
+
+            return redirect(
+                url_for(
+                    "register"
+                )
+            )
 
         return redirect(
             url_for(
