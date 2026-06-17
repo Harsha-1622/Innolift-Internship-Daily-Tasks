@@ -82,7 +82,7 @@ app.secret_key = "9xK7@qL2#pR8!mN5$wT1^cV6&zY4*eA"
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 587
 app.config["MAIL_USE_TLS"] = True
-
+app.config["MAIL_TIMEOUT"] = 10
 app.config["MAIL_USERNAME"] = os.getenv(
     "MAIL_USERNAME"
 )
@@ -115,11 +115,10 @@ def test_email():
 
     msg.body = "Hello from Flask!"
 
-    mail.send(
-
-        msg
-
-    )
+    try:
+        mail.send(msg)
+    except Exception as e:
+        return f"Email Error: {str(e)}"
 
     return "Email Sent Successfully!"
 # ==========================================
