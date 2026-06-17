@@ -415,43 +415,28 @@ def verify_otp():
 
             cursor = connection.cursor()
 
-            try:
+            cursor.execute(
+                """
+                INSERT INTO users
+                (
+                    username,
+                    email,
+                    password
+                )
+                VALUES (?, ?, ?)
+                """,
 
-                cursor.execute(
-                    """
-                    INSERT INTO users
-                    (
-                        username,
-                        email,
-                        password
-                    )
-                    VALUES (?, ?, ?)
-                    """,
-                    (
-                        session["username"],
-                        session["email"],
-                        hashed_password
-                    )
+                (
+                    session["username"],
+                    session["email"],
+                    hashed_password
                 )
 
-                connection.commit()
+            )
 
-            except sqlite3.IntegrityError:
-
-                connection.close()
-
-                flash(
-                    "Email already registered!"
-                )
-
-                return redirect(
-                    url_for(
-                        "register"
-                    )
-                )
+            connection.commit()
 
             # Create User object
-
             user = User(
 
                 cursor.lastrowid,
@@ -462,8 +447,7 @@ def verify_otp():
 
             )
 
-            # Automatically login
-
+            # Automatically login user
             login_user(
                 user
             )
@@ -471,7 +455,6 @@ def verify_otp():
             connection.close()
 
             # Clear session data
-
             session.pop(
                 "otp",
                 None

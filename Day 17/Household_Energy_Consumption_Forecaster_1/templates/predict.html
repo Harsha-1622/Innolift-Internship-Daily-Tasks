@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="predict-banner">
+
+    <div>
+
+        <h1>
+
+            Energy Prediction
+
+        </h1>
+
+        <p>
+
+            Forecast household energy consumption using Machine Learning.
+
+        </p>
+
+    </div>
+
+</div>
+<div class="container mt-5">
+
+    <div class="row">
+
+        <!-- Input Form -->
+
+        <div class="col-md-6">
+
+            <div class="predict-card">
+
+                <h2>
+
+                    ⚡ Energy Prediction
+
+                </h2>
+
+                <hr>
+
+                <form method="POST">
+
+                    <input type="number" step="0.01" class="form-control mb-3" name="global_reactive_power"
+                        placeholder="Global Reactive Power" value="{{ global_reactive_power }}" required>
+
+                    <input type="number" step="0.01" class="form-control mb-3" name="voltage" placeholder="Voltage"
+                        value="{{ voltage }}" required>
+
+                    <input type="number" step="0.01" class="form-control mb-3" name="global_intensity"
+                        placeholder="Global Intensity" value="{{ global_intensity }}" required>
+
+                    <input type="number" step="0.01" class="form-control mb-3" name="sub_metering_1"
+                        placeholder="Sub Metering 1" value="{{ sub_metering_1 }}" required>
+
+                    <input type="number" step="0.01" class="form-control mb-3" name="sub_metering_2"
+                        placeholder="Sub Metering 2" value="{{ sub_metering_2 }}" required>
+
+                    <input type="number" step="0.01" class="form-control mb-4" name="sub_metering_3"
+                        placeholder="Sub Metering 3" value="{{ sub_metering_3 }}" required>
+
+                    <div class="d-flex gap-3">
+
+                        <button type="submit" class="btn btn-primary">
+
+                            Predict
+
+                        </button>
+                        <a href="/download_report" class="btn btn-success">
+
+                            Download PDF
+
+                        </a>
+
+                        <a href="/predict" class="btn btn-danger">
+
+                            Refresh
+
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- Prediction Result -->
+
+        <div class="col-md-6">
+
+            <div class="result-card">
+
+                <h2>
+
+                    📊 Prediction Result
+
+                </h2>
+
+                <hr>
+
+                <h2>
+
+                    Prediction Result
+
+                </h2>
+
+                <hr>
+
+                {% if prediction %}
+
+                {% if category == "Low Consumption" %}
+
+                <div class="result-card low-card">
+
+                    {% elif category == "Moderate Consumption" %}
+
+                    <div class="result-card moderate-card">
+
+                        {% else %}
+
+                        <div class="result-card high-card">
+
+                            {% endif %}
+
+                            <h1>
+
+                                {{ prediction }} kW
+
+                            </h1>
+
+                            <h4>
+
+                                {{ category }}
+
+                            </h4>
+
+                            <p>
+
+                                {{ advice }}
+
+                            </p>
+
+                        </div>
+
+                        {% else %}
+
+                        <div class="result-card">
+
+                            <p>
+
+                                Enter input values and click Predict.
+
+                            </p>
+
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endblock %}

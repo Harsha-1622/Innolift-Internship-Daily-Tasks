@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Profile Banner -->
+
+<div class="profile-banner">
+
+    <div class="profile-overlay">
+        <img src="{% if current_user.profile_picture %}
+
+{{ url_for(
+
+'static',
+
+filename='uploads/' + current_user.profile_picture
+
+) }}
+
+{% else %}
+
+https://via.placeholder.com/180
+
+{% endif %}" class="profile-image">
+        <h1>
+
+            Welcome,
+
+            {{ current_user.username }}
+
+            👋
+
+        </h1>
+
+        <h4>
+
+            {{ current_user.email }}
+
+        </h4>
+        <form method="POST" action="/upload_profile_picture" enctype="multipart/form-data">
+
+            <input type="file" name="profile_picture" class="form-control my-3" required>
+
+            <button class="btn btn-primary">
+
+                Upload Picture
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div class="container my-5">
+
+    <div class="row g-4">
+
+        <div class="col-md-4">
+
+            <div class="card shadow-lg border-0 rounded-4 p-4 text-center">
+
+                <h5>
+
+                    Total Predictions
+
+                </h5>
+
+                <h1>
+
+                    {{ total_predictions }}
+
+                </h1>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow-lg border-0 rounded-4 p-4 text-center">
+
+                <h5>
+
+                    Average Consumption
+
+                </h5>
+
+                <h1>
+
+                    {{ average_consumption }}
+
+                    kW
+
+                </h1>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow-lg border-0 rounded-4 p-4 text-center">
+
+                <h5>
+
+                    Highest Consumption
+
+                </h5>
+
+                <h1>
+
+                    {{ highest_consumption }}
+
+                    kW
+
+                </h1>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <br>
+
+    <div class="d-flex justify-content-center gap-3">
+
+        <a href="/predict" class="btn btn-primary">
+
+            Predict
+
+        </a>
+
+        <a href="/history" class="btn btn-success">
+
+            History
+
+        </a>
+
+        <a href="/analytics" class="btn btn-dark">
+
+            Analytics
+
+        </a>
+        <a href="/change_password" class="btn btn-warning">
+
+            Change Password
+
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}
