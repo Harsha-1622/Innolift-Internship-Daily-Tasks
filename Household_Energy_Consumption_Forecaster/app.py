@@ -368,15 +368,19 @@ Your OTP for registration is:
 Please enter this OTP to complete your registration.
 """
 
-        mail.send(msg)
+        #mail.send(msg)
 
-        flash("OTP sent successfully!")
+        print("OTP =", otp)
 
-        return redirect(
-            url_for(
-                "verify_otp"
-            )
+    flash(
+        f"OTP generated successfully: {otp}"
+    )
+
+    return redirect(
+        url_for(
+            "verify_otp"
         )
+    )
 
     return render_template("register.html")
 
