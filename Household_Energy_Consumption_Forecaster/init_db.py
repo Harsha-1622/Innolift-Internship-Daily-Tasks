@@ -3,91 +3,79 @@
 # ==========================================
 
 import sqlite3
-
 # ==========================================
-# CONNECT DATABASE
-# ==========================================
-
-connection = sqlite3.connect(
-    "database.db"
-)
-
-cursor = connection.cursor()
-
-# ==========================================
-# USERS TABLE
+# DATABASE INITIALIZATION
 # ==========================================
 
-cursor.execute(
-    """
-    CREATE TABLE IF NOT EXISTS users (
+def init_db():
 
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-        username TEXT NOT NULL,
-
-        email TEXT UNIQUE NOT NULL,
-
-        password TEXT NOT NULL,
-
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
+    connection = sqlite3.connect(
+        "database.db"
     )
-    """
-)
 
-# ==========================================
-# PREDICTIONS TABLE
-# ==========================================
+    cursor = connection.cursor()
 
-cursor.execute(
-    """
-    CREATE TABLE IF NOT EXISTS predictions (
+    # USERS TABLE
 
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS users (
 
-        user_id INTEGER,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-        global_reactive_power REAL,
+            username TEXT NOT NULL,
 
-        voltage REAL,
+            email TEXT UNIQUE NOT NULL,
 
-        global_intensity REAL,
+            password TEXT NOT NULL,
 
-        sub_metering_1 REAL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
-        sub_metering_2 REAL,
-
-        sub_metering_3 REAL,
-
-        predicted_power REAL,
-
-        category TEXT,
-
-        advice TEXT,
-
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-        FOREIGN KEY(user_id)
-
-        REFERENCES users(id)
-
+        )
+        """
     )
-    """
-)
 
-# ==========================================
-# SAVE CHANGES
-# ==========================================
+    # PREDICTIONS TABLE
 
-connection.commit()
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS predictions (
 
-# ==========================================
-# CLOSE DATABASE
-# ==========================================
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-connection.close()
+            user_id INTEGER,
 
-print(
-    "Database created successfully!"
-)
+            global_reactive_power REAL,
+
+            voltage REAL,
+
+            global_intensity REAL,
+
+            sub_metering_1 REAL,
+
+            sub_metering_2 REAL,
+
+            sub_metering_3 REAL,
+
+            predicted_power REAL,
+
+            category TEXT,
+
+            advice TEXT,
+
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY(user_id)
+            REFERENCES users(id)
+
+        )
+        """
+    )
+
+    connection.commit()
+
+    connection.close()
+
+    print(
+        "Database initialized successfully!"
+    )

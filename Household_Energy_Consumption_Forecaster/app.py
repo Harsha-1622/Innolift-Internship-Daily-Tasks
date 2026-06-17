@@ -48,11 +48,33 @@ import csv
 
 from flask import make_response
 
+def init_db():
+
+    connection = sqlite3.connect("database.db")
+
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
+        )
+        """
+    )
+
+    connection.commit()
+
+    connection.close()
+
 # ==========================================
 # CREATE APP
 # ==========================================
 
 app = Flask(__name__)
+init_db()
 app.config["UPLOAD_FOLDER"] = "static/uploads"
 
 app.secret_key = "energy_secret_key"
