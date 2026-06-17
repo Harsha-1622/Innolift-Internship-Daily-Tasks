@@ -99,27 +99,18 @@ app.config["MAIL_DEFAULT_SENDER"] = os.getenv(
 mail = Mail(app)
 
 @app.route('/test_email')
-
 def test_email():
 
+    return "Before mail.send()"
+
     msg = Message(
-
         subject="Test Email",
-
-        recipients=[
-
-            "vtu27945@veltech.edu.in"
-
-        ]
-
+        recipients=["vtu27945@veltech.edu.in"]
     )
 
     msg.body = "Hello from Flask!"
 
-    try:
-        mail.send(msg)
-    except Exception as e:
-        return f"Email Error: {str(e)}"
+    mail.send(msg)
 
     return "Email Sent Successfully!"
 # ==========================================
