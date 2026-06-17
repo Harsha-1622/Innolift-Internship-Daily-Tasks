@@ -10,7 +10,7 @@ import os
 from flask import session
 import random
 load_dotenv()
-
+import requests
 
 from werkzeug.utils import secure_filename
 import sqlite3
@@ -45,8 +45,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import csv
 
 from flask import make_response
-import sib_api_v3_sdk
-from sib_api_v3_sdk.rest import ApiException
+
 # ==========================================
 # DATABASE INITIALIZATION
 # ==========================================
@@ -139,77 +138,77 @@ app.secret_key = os.getenv("SECRET_KEY")
 
 def send_otp_email(receiver_email, username, otp):
 
-    configuration = sib_api_v3_sdk.Configuration()
+    url = "https://api.brevo.com/v3/smtp/email"
 
-    configuration.api_key["api-key"] = os.getenv(
-        "BREVO_API_KEY"
-    )
+    headers = {
 
-    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+        "accept": "application/json",
 
-        sib_api_v3_sdk.ApiClient(
-            configuration
-        )
+        "api-key": os.getenv(
+            "BREVO_API_KEY"
+        ),
 
-    )
-
-    sender = {
-
-        "name": "Energy Forecaster",
-
-        "email": "vtu27945@veltech.edu.in"
+        "content-type": "application/json"
 
     }
 
-    to = [
+    payload = {
 
-        {
+        "sender": {
 
-            "email": receiver_email,
+            "name": "Energy Forecaster",
 
-            "name": username
+            "email": "vtu27945@veltech.edu.in"
 
-        }
+        },
 
-    ]
+        "to": [
 
-    subject = "Email Verification OTP"
+            {
 
-    html_content = f"""
+                "email": receiver_email,
 
-    <h2>Hello {username},</h2>
+                "name": username
 
-    <p>Your OTP for registration is:</p>
+            }
 
-    <h1>{otp}</h1>
+        ],
 
-    <p>Please enter this OTP to complete your registration.</p>
+        "subject": "Email Verification OTP",
 
-    """
+        "htmlContent": f"""
 
-    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+        <h2>Hello {username},</h2>
 
-        to=to,
+        <p>Your OTP for registration is:</p>
 
-        sender=sender,
+        <h1>{otp}</h1>
 
-        subject=subject,
+        <p>Please enter this OTP to complete your registration.</p>
 
-        html_content=html_content
+        """
 
-    )
+    }
 
     try:
 
-        api_instance.send_transac_email(
+        response = requests.post(
 
-            send_smtp_email
+            url,
+
+            json=payload,
+
+            headers=headers
 
         )
 
-        return True
+        print(response.status_code)
 
-    except ApiException as e:
+        print(response.text)
+
+        return response.status_code == 201
+
+    except Exception as e:
 
         print(
 
@@ -220,7 +219,6 @@ def send_otp_email(receiver_email, username, otp):
         )
 
         return False
-
 # ==========================================
 # LOAD MODEL
 # ==========================================
