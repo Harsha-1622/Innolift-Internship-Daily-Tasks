@@ -158,7 +158,7 @@ def send_otp_email(receiver_email, username, otp):
 
             "name": "Energy Forecaster",
 
-            "email": "vtu27945@veltech.edu.in"
+            "email": "harshabhogaraju@gmail.com"
 
         },
 
