@@ -146,27 +146,25 @@ def test_email():
 
     try:
 
-        resend.Emails.send({
-
+        params = {
             "from": "onboarding@resend.dev",
-
-            "to": "harshabhogaraju@gmail.com",
-
+            "to": ["vtu27945@veltech.edu.in"],
             "subject": "Test Email",
-
             "html": """
             <h1>Hello!</h1>
-            <p>This email is sent using Resend.</p>
+            <p>This email was sent using Resend.</p>
             """
+        }
 
-        })
+        email = resend.Email.send(
+            params
+        )
 
-        return "Email Sent Successfully!"
+        return f"Email Sent Successfully! {email}"
 
     except Exception as e:
 
         return f"Error: {e}"
-
 # ==========================================
 # LOAD MODEL
 # ==========================================
