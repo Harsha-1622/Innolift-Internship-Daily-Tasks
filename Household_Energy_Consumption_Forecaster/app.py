@@ -45,6 +45,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import csv
 
 from flask import make_response
+from authlib.integrations.flask_client import OAuth
 
 # ==========================================
 # DATABASE INITIALIZATION
@@ -128,13 +129,35 @@ def init_db():
 # ==========================================
 
 app = Flask(__name__)
+oauth = OAuth(app)
+
+google = oauth.register(
+
+    name="google",
+
+    client_id=os.getenv(
+        "GOOGLE_CLIENT_ID"
+    ),
+
+    client_secret=os.getenv(
+        "GOOGLE_CLIENT_SECRET"
+    ),
+
+    server_metadata_url=
+    "https://accounts.google.com/.well-known/openid-configuration",
+
+    client_kwargs={
+
+        "scope": "openid email profile"
+
+    }
+
+)
 init_db()
 app.config["UPLOAD_FOLDER"] = "static/uploads"
 
 app.secret_key = os.getenv("SECRET_KEY")
-# ==========================================
-# SEND OTP EMAIL USING BREVO API
-# ==========================================
+
 
 def send_otp_email(receiver_email, username, otp):
 
@@ -346,8 +369,6 @@ def register():
             flash("Passwords do not match!")
             return redirect(url_for("register"))
 
-        # Check whether email already exists
-
         connection = sqlite3.connect("database.db")
         cursor = connection.cursor()
 
@@ -362,56 +383,42 @@ def register():
 
         existing_user = cursor.fetchone()
 
-        connection.close()
-
         if existing_user:
+
+            connection.close()
+
             flash("Email already registered!")
+
             return redirect(url_for("register"))
 
-        # Generate OTP
+        hashed_password = generate_password_hash(password)
 
-        otp = random.randint(100000, 999999)
-
-        # Store details in session
-
-        session["otp"] = str(otp)
-        session["username"] = username
-        session["email"] = email
-        session["password"] = password
-
-        # Send OTP email using Brevo API
-
-        success = send_otp_email(
-
-            email,
-
-            username,
-
-            otp
-
+        cursor.execute(
+            """
+            INSERT INTO users
+            (
+                username,
+                email,
+                password
+            )
+            VALUES (?, ?, ?)
+            """,
+            (
+                username,
+                email,
+                hashed_password
+            )
         )
 
-        if success:
+        connection.commit()
 
-            flash(
-                "OTP sent successfully!"
-            )
+        connection.close()
 
-        else:
-
-            flash(
-                "Failed to send OTP!"
-            )
-
-            return redirect(
-                url_for(
-                    "register"
-                )
-            )
+        flash("Registration successful!")
 
         return redirect(
             url_for(
-                "verify_otp"
+                "login"
             )
         )
 
@@ -419,133 +426,121 @@ def register():
         "register.html"
     )
 # ==========================================
-# VERIFY OTP
+# GOOGLE LOGIN
 # ==========================================
+@app.route("/google_login")
+def google_login():
 
-@app.route(
-    "/verify_otp",
-    methods=["GET", "POST"]
-)
-def verify_otp():
+    redirect_uri = url_for(
 
-    if request.method == "POST":
+        "google_callback",
 
-        entered_otp = request.form["otp"]
+        _external=True
 
-        if entered_otp == session.get("otp"):
-
-            hashed_password = generate_password_hash(
-                session["password"]
-            )
-
-            connection = sqlite3.connect(
-                "database.db"
-            )
-
-            cursor = connection.cursor()
-
-            try:
-
-                cursor.execute(
-                    """
-                    INSERT INTO users
-                    (
-                        username,
-                        email,
-                        password
-                    )
-                    VALUES (?, ?, ?)
-                    """,
-                    (
-                        session["username"],
-                        session["email"],
-                        hashed_password
-                    )
-                )
-
-                connection.commit()
-
-            except sqlite3.IntegrityError:
-
-                connection.close()
-
-                flash(
-                    "Email already registered!"
-                )
-
-                return redirect(
-                    url_for(
-                        "register"
-                    )
-                )
-
-            # Create User object
-
-            user = User(
-
-                cursor.lastrowid,
-
-                session["username"],
-
-                session["email"]
-
-            )
-
-            # Automatically login
-
-            login_user(
-                user
-            )
-
-            connection.close()
-
-            # Clear session data
-
-            session.pop(
-                "otp",
-                None
-            )
-
-            session.pop(
-                "username",
-                None
-            )
-
-            session.pop(
-                "email",
-                None
-            )
-
-            session.pop(
-                "password",
-                None
-            )
-
-            flash(
-                "Registration successful!"
-            )
-
-            return redirect(
-                url_for(
-                    "home"
-                )
-            )
-
-        else:
-
-            flash(
-                "Invalid OTP!"
-            )
-
-            return redirect(
-                url_for(
-                    "verify_otp"
-                )
-            )
-
-    return render_template(
-        "verify_otp.html"
     )
+
+    return google.authorize_redirect(
+
+        redirect_uri
+
+    )
+# ==========================================
+# GOOGLE CALLBACK
+# ==========================================
+@app.route("/google/callback")
+def google_callback():
+
+    token = google.authorize_access_token()
+
+    user_info = token["userinfo"]
+
+    username = user_info["name"]
+
+    email = user_info["email"]
+
+    profile_picture = user_info["picture"]
+
+    connection = sqlite3.connect(
+        "database.db"
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        SELECT *
+        FROM users
+        WHERE email = ?
+        """,
+
+        (email,)
+    )
+
+    user = cursor.fetchone()
+
+    if user is None:
+
+        cursor.execute(
+            """
+            INSERT INTO users
+            (
+                username,
+                email,
+                password,
+                profile_picture
+            )
+            VALUES (?, ?, ?, ?)
+            """,
+
+            (
+                username,
+                email,
+                "",
+                profile_picture
+            )
+        )
+
+        connection.commit()
+
+        user_id = cursor.lastrowid
+
+    else:
+
+        user_id = user[0]
+
+    connection.close()
+
+    user = User(
+
+        user_id,
+
+        username,
+
+        email
+
+    )
+
+    login_user(
+
+        user
+
+    )
+
+    flash(
+
+        "Logged in successfully!"
+
+    )
+
+    return redirect(
+
+        url_for(
+
+            "home"
+
+        )
+    )
+
 # ==========================================
 # LOGIN
 # ==========================================

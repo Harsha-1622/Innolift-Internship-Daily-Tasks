@@ -62,13 +62,33 @@
 
                 </form>
 
+                <div class="text-center mt-3">
+
+                    <p>
+
+                        OR
+
+                    </p>
+
+                    <a
+                        href="{{ url_for('google_login') }}"
+                        class="btn btn-danger w-100">
+
+                        <i class="bi bi-google"></i>
+
+                        Continue with Google
+
+                    </a>
+
+                </div>
+
                 <hr>
 
                 <p class="text-center mt-4">
 
                     Don't have an account?
 
-                    <a href="/register">
+                    <a href="{{ url_for('register') }}">
 
                         Register
 
