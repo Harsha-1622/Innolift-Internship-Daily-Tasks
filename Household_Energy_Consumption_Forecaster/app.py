@@ -110,7 +110,17 @@ def test_email():
 
     msg.body = "Hello from Flask!"
 
-    mail.send(msg)
+    # mail.send(msg)
+
+    flash(
+        f"OTP generated: {otp}"
+    )
+
+    return redirect(
+        url_for(
+            "verify_otp"
+        )
+    )
 
     return "Email Sent Successfully!"
 # ==========================================
