@@ -139,6 +139,7 @@ app.config["MAIL_SERVER"] = "smtp-relay.brevo.com"
 app.config["MAIL_PORT"] = 587
 app.config["MAIL_USE_TLS"] = True
 app.config["MAIL_TIMEOUT"] = 10
+app.config["MAIL_DEBUG"] = True
 
 app.config["MAIL_USERNAME"] = os.getenv(
     "MAIL_USERNAME"
@@ -154,31 +155,36 @@ app.config["MAIL_DEFAULT_SENDER"] = os.getenv(
 
 mail = Mail(app)
 
-@app.route('/test_email')
+# ==========================================
+# TEST EMAIL
+# ==========================================
+
+@app.route("/test_email")
 def test_email():
 
-    return "Before mail.send()"
-
     msg = Message(
+
         subject="Test Email",
-        recipients=["vtu27945@veltech.edu.in"]
+
+        recipients=[
+
+            "vtu27945@veltech.edu.in"
+
+        ]
+
     )
 
     msg.body = "Hello from Flask!"
 
-    # mail.send(msg)
+    try:
 
-    flash(
-        f"OTP generated: {otp}"
-    )
+        mail.send(msg)
 
-    return redirect(
-        url_for(
-            "verify_otp"
-        )
-    )
+        return "Email Sent Successfully!"
 
-    return "Email Sent Successfully!"
+    except Exception as e:
+
+        return f"Email Error: {str(e)}"
 # ==========================================
 # LOAD MODEL
 # ==========================================
