@@ -165,6 +165,12 @@ def test_email():
     except Exception as e:
 
         return f"Error: {e}"
+@app.route("/debug_resend")
+def debug_resend():
+
+    import resend
+
+    return "<br>".join(dir(resend))
 # ==========================================
 # LOAD MODEL
 # ==========================================
