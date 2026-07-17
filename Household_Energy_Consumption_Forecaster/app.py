@@ -811,7 +811,8 @@ def predict():
 
         model = load_model()
 
-        prediction = round(model.predict(sample)[0], 3)
+        prediction = float(model.predict(sample)[0])
+        prediction = round(prediction, 3)
 
         if prediction < 1:
 
