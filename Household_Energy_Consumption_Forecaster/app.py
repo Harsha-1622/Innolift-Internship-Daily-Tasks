@@ -6,14 +6,18 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 import os
 
 from dotenv import load_dotenv
-import os
 from flask import session
 import random
+import psycopg2
 load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+
+def get_connection():
+    return psycopg2.connect(DATABASE_URL)
 import requests
 
 from werkzeug.utils import secure_filename
-import sqlite3
 import pandas as pd
 import io
 import joblib
@@ -53,17 +57,15 @@ from authlib.integrations.flask_client import OAuth
 
 def init_db():
 
-    connection = sqlite3.connect("database.db")
-
+    connection = get_connection()
     cursor = connection.cursor()
 
     # USERS TABLE
 
-    cursor.execute(
-        """
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS users(
 
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
 
             username TEXT NOT NULL,
 
@@ -76,32 +78,30 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
         )
-        """
-    )
+    """)
 
     # PREDICTIONS TABLE
 
-    cursor.execute(
-        """
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS predictions(
 
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
 
             user_id INTEGER,
 
-            global_reactive_power REAL,
+            global_reactive_power DOUBLE PRECISION,
 
-            voltage REAL,
+            voltage DOUBLE PRECISION,
 
-            global_intensity REAL,
+            global_intensity DOUBLE PRECISION,
 
-            sub_metering_1 REAL,
+            sub_metering_1 DOUBLE PRECISION,
 
-            sub_metering_2 REAL,
+            sub_metering_2 DOUBLE PRECISION,
 
-            sub_metering_3 REAL,
+            sub_metering_3 DOUBLE PRECISION,
 
-            predicted_power REAL,
+            predicted_power DOUBLE PRECISION,
 
             category TEXT,
 
@@ -110,20 +110,18 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
             FOREIGN KEY(user_id)
-
             REFERENCES users(id)
 
         )
-        """
-    )
+    """)
 
     connection.commit()
 
+    cursor.close()
+
     connection.close()
 
-    print(
-        "Database initialized successfully!"
-    )
+    print("PostgreSQL Database initialized successfully!")
 # ==========================================
 # CREATE APP
 # ==========================================
@@ -285,7 +283,7 @@ class User(UserMixin):
 @login_manager.user_loader
 def load_user(user_id):
 
-    connection = sqlite3.connect("database.db")
+    connection = get_connection()
 
     cursor = connection.cursor()
 
@@ -296,15 +294,15 @@ def load_user(user_id):
             username,
             email,
             profile_picture
-
         FROM users
-
-        WHERE id = ?
+        WHERE id = %s
         """,
         (user_id,),
     )
 
     user = cursor.fetchone()
+
+    cursor.close()
 
     connection.close()
 
@@ -317,8 +315,6 @@ def load_user(user_id):
         return u
 
     return None
-
-
 # ==========================================
 # HOME
 # ==========================================
@@ -332,18 +328,18 @@ def home():
 # ==========================================
 # REGISTER
 # ==========================================
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
 
     if request.method == "POST":
 
         username = request.form["username"]
-        email = request.form["email"]
-        password = request.form["password"]
-        confirm_password = request.form["confirm_password"]
 
-        # Password validation
+        email = request.form["email"]
+
+        password = request.form["password"]
+
+        confirm_password = request.form["confirm_password"]
 
         if len(password) < 8:
             flash("Password must contain at least 8 characters.")
@@ -369,21 +365,24 @@ def register():
             flash("Passwords do not match!")
             return redirect(url_for("register"))
 
-        connection = sqlite3.connect("database.db")
+        connection = get_connection()
+
         cursor = connection.cursor()
 
         cursor.execute(
             """
             SELECT *
             FROM users
-            WHERE email = ?
+            WHERE email = %s
             """,
-            (email,)
+            (email,),
         )
 
         existing_user = cursor.fetchone()
 
         if existing_user:
+
+            cursor.close()
 
             connection.close()
 
@@ -401,30 +400,26 @@ def register():
                 email,
                 password
             )
-            VALUES (?, ?, ?)
+            VALUES (%s, %s, %s)
             """,
             (
                 username,
                 email,
-                hashed_password
-            )
+                hashed_password,
+            ),
         )
 
         connection.commit()
+
+        cursor.close()
 
         connection.close()
 
         flash("Registration successful!")
 
-        return redirect(
-            url_for(
-                "login"
-            )
-        )
+        return redirect(url_for("login"))
 
-    return render_template(
-        "register.html"
-    )
+    return render_template("register.html")
 # ==========================================
 # GOOGLE LOGIN
 # ==========================================
@@ -460,26 +455,29 @@ def google_callback():
 
     profile_picture = user_info["picture"]
 
-    connection = sqlite3.connect(
-        "database.db"
-    )
+    connection = get_connection()
 
     cursor = connection.cursor()
 
+    # Check if user already exists
     cursor.execute(
         """
-        SELECT *
+        SELECT
+            id,
+            username,
+            email,
+            profile_picture
         FROM users
-        WHERE email = ?
+        WHERE email = %s
         """,
-
-        (email,)
+        (email,),
     )
 
     user = cursor.fetchone()
 
     if user is None:
 
+        # Insert new Google user
         cursor.execute(
             """
             INSERT INTO users
@@ -489,57 +487,42 @@ def google_callback():
                 password,
                 profile_picture
             )
-            VALUES (?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s)
+            RETURNING id
             """,
-
             (
                 username,
                 email,
                 "",
-                profile_picture
-            )
+                profile_picture,
+            ),
         )
 
-        connection.commit()
+        user_id = cursor.fetchone()[0]
 
-        user_id = cursor.lastrowid
+        connection.commit()
 
     else:
 
         user_id = user[0]
 
+    cursor.close()
+
     connection.close()
 
     user = User(
-
         user_id,
-
         username,
-
-        email
-
+        email,
     )
 
-    login_user(
+    user.profile_picture = profile_picture
 
-        user
+    login_user(user)
 
-    )
+    flash("Logged in successfully!")
 
-    flash(
-
-        "Logged in successfully!"
-
-    )
-
-    return redirect(
-
-        url_for(
-
-            "home"
-
-        )
-    )
+    return redirect(url_for("home"))
 
 # ==========================================
 # LOGIN
@@ -554,9 +537,7 @@ def login():
 
         password = request.form["password"]
 
-        connection = sqlite3.connect(
-            "database.db"
-        )
+        connection = get_connection()
 
         cursor = connection.cursor()
 
@@ -567,72 +548,39 @@ def login():
                 username,
                 email,
                 password
-
             FROM users
-
-            WHERE email = ?
+            WHERE email = %s
             """,
-
-            (
-                email,
-            ),
-
+            (email,),
         )
 
         user = cursor.fetchone()
 
+        cursor.close()
+
         connection.close()
 
-        if user and check_password_hash(
-            user[3],
-            password
-        ):
-
-            # Create User object
+        if user and check_password_hash(user[3], password):
 
             user_obj = User(
-
                 user[0],
-
                 user[1],
-
-                user[2]
-
+                user[2],
             )
 
-            # Login user
+            login_user(user_obj)
 
-            login_user(
-                user_obj
-            )
+            flash("Login successful!")
 
-            flash(
-                "Login successful!"
-            )
-
-            # Redirect to Home Page
-
-            return redirect(
-                url_for(
-                    "home"
-                )
-            )
+            return redirect(url_for("home"))
 
         else:
 
-            flash(
-                "Invalid email or password!"
-            )
+            flash("Invalid email or password!")
 
-            return redirect(
-                url_for(
-                    "login"
-                )
-            )
+            return redirect(url_for("login"))
 
-    return render_template(
-        "login.html"
-    )
+    return render_template("login.html")
 # ==========================================
 # PROFILE
 # ==========================================
@@ -642,7 +590,7 @@ def login():
 @login_required
 def profile():
 
-    connection = sqlite3.connect("database.db")
+    connection = get_connection()
 
     cursor = connection.cursor()
 
@@ -654,12 +602,14 @@ def profile():
 
         FROM predictions
 
-        WHERE user_id = ?
+        WHERE user_id = %s
         """,
         (current_user.id,),
     )
 
     records = cursor.fetchall()
+
+    cursor.close()
 
     connection.close()
 
@@ -686,7 +636,6 @@ def profile():
         highest_consumption=highest_consumption,
     )
 
-
 # ==========================================
 # CHANGE PASSWORD
 # ==========================================
@@ -704,7 +653,7 @@ def change_password():
 
         confirm_password = request.form["confirm_password"]
 
-        connection = sqlite3.connect("database.db")
+        connection = get_connection()
 
         cursor = connection.cursor()
 
@@ -716,7 +665,7 @@ def change_password():
 
             FROM users
 
-            WHERE id = ?
+            WHERE id = %s
             """,
             (current_user.id,),
         )
@@ -727,6 +676,8 @@ def change_password():
 
             flash("Current password is incorrect!")
 
+            cursor.close()
+
             connection.close()
 
             return redirect(url_for("change_password"))
@@ -734,6 +685,8 @@ def change_password():
         if new_password != confirm_password:
 
             flash("Passwords do not match!")
+
+            cursor.close()
 
             connection.close()
 
@@ -745,14 +698,19 @@ def change_password():
             """
             UPDATE users
 
-            SET password = ?
+            SET password = %s
 
-            WHERE id = ?
+            WHERE id = %s
             """,
-            (hashed_password, current_user.id),
+            (
+                hashed_password,
+                current_user.id,
+            ),
         )
 
         connection.commit()
+
+        cursor.close()
 
         connection.close()
 
@@ -761,7 +719,6 @@ def change_password():
         return redirect(url_for("profile"))
 
     return render_template("change_password.html")
-
 
 # ==========================================
 # UPLOAD PROFILE PICTURE
@@ -786,7 +743,7 @@ def upload_profile_picture():
 
     file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
 
-    connection = sqlite3.connect("database.db")
+    connection = get_connection()
 
     cursor = connection.cursor()
 
@@ -794,14 +751,19 @@ def upload_profile_picture():
         """
         UPDATE users
 
-        SET profile_picture = ?
+        SET profile_picture = %s
 
-        WHERE id = ?
+        WHERE id = %s
         """,
-        (filename, current_user.id),
+        (
+            filename,
+            current_user.id,
+        ),
     )
 
     connection.commit()
+
+    cursor.close()
 
     connection.close()
 
@@ -809,82 +771,64 @@ def upload_profile_picture():
 
     return redirect(url_for("profile"))
 
-
 # ==========================================
 # PREDICT
 # ==========================================
-
-
 @app.route("/predict", methods=["GET", "POST"])
 @login_required
 def predict():
 
     prediction = None
-
     category = None
-
     advice = None
 
     global_reactive_power = ""
-
     voltage = ""
-
     global_intensity = ""
-
     sub_metering_1 = ""
-
     sub_metering_2 = ""
-
     sub_metering_3 = ""
 
     if request.method == "POST":
 
         global_reactive_power = request.form["global_reactive_power"]
-
         voltage = request.form["voltage"]
-
         global_intensity = request.form["global_intensity"]
-
         sub_metering_1 = request.form["sub_metering_1"]
-
         sub_metering_2 = request.form["sub_metering_2"]
-
         sub_metering_3 = request.form["sub_metering_3"]
 
         sample = pd.DataFrame(
-            [
-                {
-                    "Global_reactive_power": float(global_reactive_power),
-                    "Voltage": float(voltage),
-                    "Global_intensity": float(global_intensity),
-                    "Sub_metering_1": float(sub_metering_1),
-                    "Sub_metering_2": float(sub_metering_2),
-                    "Sub_metering_3": float(sub_metering_3),
-                }
-            ]
+            [{
+                "Global_reactive_power": float(global_reactive_power),
+                "Voltage": float(voltage),
+                "Global_intensity": float(global_intensity),
+                "Sub_metering_1": float(sub_metering_1),
+                "Sub_metering_2": float(sub_metering_2),
+                "Sub_metering_3": float(sub_metering_3),
+            }]
         )
+
         model = load_model()
+
         prediction = round(model.predict(sample)[0], 3)
 
         if prediction < 1:
 
             category = "Low Consumption"
-
             advice = "Power usage is low."
 
         elif prediction < 3:
 
             category = "Moderate Consumption"
-
             advice = "Power usage is within normal range."
 
         else:
 
             category = "High Consumption"
-
             advice = "Power usage is high. Consider saving energy."
 
-        connection = sqlite3.connect("database.db")
+        connection = get_connection()
 
         cursor = connection.cursor()
 
@@ -892,30 +836,19 @@ def predict():
             """
             INSERT INTO predictions
             (
-
                 user_id,
-
                 global_reactive_power,
-
                 voltage,
-
                 global_intensity,
-
                 sub_metering_1,
-
                 sub_metering_2,
-
                 sub_metering_3,
-
                 predicted_power,
-
                 category,
-
                 advice
-
             )
 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """,
             (
                 current_user.id,
@@ -932,6 +865,8 @@ def predict():
         )
 
         connection.commit()
+
+        cursor.close()
 
         connection.close()
 
@@ -953,12 +888,11 @@ def predict():
 # DOWNLOAD PDF REPORT
 # ==========================================
 
-
 @app.route("/download_report")
 @login_required
 def download_report():
 
-    connection = sqlite3.connect("database.db")
+    connection = get_connection()
 
     cursor = connection.cursor()
 
@@ -976,7 +910,7 @@ def download_report():
 
         FROM predictions
 
-        WHERE user_id = ?
+        WHERE user_id = %s
 
         ORDER BY id DESC
 
@@ -986,6 +920,8 @@ def download_report():
     )
 
     record = cursor.fetchone()
+
+    cursor.close()
 
     connection.close()
 
@@ -999,7 +935,10 @@ def download_report():
 
     elements = []
 
-    title = Paragraph("Household Energy Consumption Report", styles["Title"])
+    title = Paragraph(
+        "Household Energy Consumption Report",
+        styles["Title"]
+    )
 
     elements.append(title)
 
@@ -1028,8 +967,10 @@ def download_report():
 
     pdf.build(elements)
 
-    return send_file("energy_report.pdf", as_attachment=True)
-
+    return send_file(
+        "energy_report.pdf",
+        as_attachment=True,
+    )
 
 # ==========================================
 # EXPORT HISTORY TO CSV
@@ -1040,7 +981,7 @@ def download_report():
 @login_required
 def export_csv():
 
-    connection = sqlite3.connect("database.db")
+    connection = get_connection()
 
     cursor = connection.cursor()
 
@@ -1058,7 +999,7 @@ def export_csv():
 
         FROM predictions
 
-        WHERE user_id = ?
+        WHERE user_id = %s
 
         ORDER BY created_at DESC
         """,
@@ -1067,13 +1008,22 @@ def export_csv():
 
     records = cursor.fetchall()
 
+    cursor.close()
+
     connection.close()
 
     output = io.StringIO()
 
     writer = csv.writer(output)
 
-    writer.writerow(["Predicted Power", "Category", "Advice", "Date"])
+    writer.writerow(
+        [
+            "Predicted Power",
+            "Category",
+            "Advice",
+            "Date",
+        ]
+    )
 
     writer.writerows(records)
 
@@ -1097,19 +1047,19 @@ def export_csv():
 @login_required
 def history():
 
-    connection = sqlite3.connect("database.db")
+    connection = get_connection()
 
     cursor = connection.cursor()
 
     cursor.execute(
         """
-         SELECT
+        SELECT
 
             id,
 
             predicted_power,
 
-         category,
+            category,
 
             advice,
 
@@ -1117,7 +1067,7 @@ def history():
 
         FROM predictions
 
-        WHERE user_id = ?
+        WHERE user_id = %s
 
         ORDER BY created_at DESC
         """,
@@ -1126,21 +1076,25 @@ def history():
 
     records = cursor.fetchall()
 
+    cursor.close()
+
     connection.close()
 
-    return render_template("history.html", records=records)
+    return render_template(
+        "history.html",
+        records=records,
+    )
 
 
 # ==========================================
 # DELETE HISTORY RECORD
 # ==========================================
 
-
 @app.route("/delete_prediction/<int:id>")
 @login_required
 def delete_prediction(id):
 
-    connection = sqlite3.connect("database.db")
+    connection = get_connection()
 
     cursor = connection.cursor()
 
@@ -1148,14 +1102,19 @@ def delete_prediction(id):
         """
         DELETE FROM predictions
 
-        WHERE id = ?
+        WHERE id = %s
 
-        AND user_id = ?
+        AND user_id = %s
         """,
-        (id, current_user.id),
+        (
+            id,
+            current_user.id,
+        ),
     )
 
     connection.commit()
+
+    cursor.close()
 
     connection.close()
 
@@ -1166,12 +1125,11 @@ def delete_prediction(id):
 # ANALYTICS
 # ==========================================
 
-
 @app.route("/analytics")
 @login_required
 def analytics():
 
-    connection = sqlite3.connect("database.db")
+    connection = get_connection()
 
     cursor = connection.cursor()
 
@@ -1187,12 +1145,14 @@ def analytics():
 
         FROM predictions
 
-        WHERE user_id = ?
+        WHERE user_id = %s
         """,
         (current_user.id,),
     )
 
     records = cursor.fetchall()
+
+    cursor.close()
 
     connection.close()
 
@@ -1215,7 +1175,8 @@ def analytics():
     lowest_consumption = round(min(powers), 3)
 
     high_percentage = round(
-        categories.count("High Consumption") * 100 / total_predictions, 2
+        categories.count("High Consumption") * 100 / total_predictions,
+        2,
     )
 
     # ==========================================
@@ -1234,7 +1195,10 @@ def analytics():
         title="Consumption Category Distribution",
     )
 
-    pie_chart.update_traces(textposition="inside", textinfo="percent+label")
+    pie_chart.update_traces(
+        textposition="inside",
+        textinfo="percent+label",
+    )
 
     pie_chart_html = pie_chart.to_html(full_html=False)
 
@@ -1242,9 +1206,15 @@ def analytics():
     # TOP 10 HIGHEST CONSUMPTION RECORDS
     # ==========================================
 
-    top_10_powers = sorted(powers, reverse=True)[:10]
+    top_10_powers = sorted(
+        powers,
+        reverse=True,
+    )[:10]
 
-    labels = [f"Record {i+1}" for i in range(len(top_10_powers))]
+    labels = [
+        f"Record {i+1}"
+        for i in range(len(top_10_powers))
+    ]
 
     bar_chart = px.bar(
         x=top_10_powers,
@@ -1253,7 +1223,10 @@ def analytics():
         title="Top 10 Highest Consumption Records",
     )
 
-    bar_chart.update_layout(yaxis_title="Records", xaxis_title="Predicted Power (kW)")
+    bar_chart.update_layout(
+        yaxis_title="Records",
+        xaxis_title="Predicted Power (kW)",
+    )
 
     bar_chart_html = bar_chart.to_html(full_html=False)
 
@@ -1261,11 +1234,20 @@ def analytics():
     # WEEKLY AVERAGE CONSUMPTION TREND
     # ==========================================
 
-    df = pd.DataFrame({"Power": powers, "Date": pd.to_datetime(dates)})
+    df = pd.DataFrame(
+        {
+            "Power": powers,
+            "Date": pd.to_datetime(dates),
+        }
+    )
 
     df["Day"] = df["Date"].dt.day_name()
 
-    weekly_avg = df.groupby("Day")["Power"].mean().reset_index()
+    weekly_avg = (
+        df.groupby("Day")["Power"]
+        .mean()
+        .reset_index()
+    )
 
     day_order = [
         "Monday",
@@ -1278,7 +1260,9 @@ def analytics():
     ]
 
     weekly_avg["Day"] = pd.Categorical(
-        weekly_avg["Day"], categories=day_order, ordered=True
+        weekly_avg["Day"],
+        categories=day_order,
+        ordered=True,
     )
 
     weekly_avg = weekly_avg.sort_values("Day")
@@ -1291,7 +1275,10 @@ def analytics():
         title="Weekly Average Consumption Trend",
     )
 
-    line_chart.update_layout(xaxis_title="Day", yaxis_title="Average Consumption (kW)")
+    line_chart.update_layout(
+        xaxis_title="Day",
+        yaxis_title="Average Consumption (kW)",
+    )
 
     line_chart_html = line_chart.to_html(full_html=False)
 
@@ -1306,7 +1293,6 @@ def analytics():
         bar_chart=bar_chart_html,
         line_chart=line_chart_html,
     )
-
 
 # ==========================================
 # ABOUT

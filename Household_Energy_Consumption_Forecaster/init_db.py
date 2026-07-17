@@ -2,26 +2,25 @@
 # IMPORTS
 # ==========================================
 
-import sqlite3
+import os
+import psycopg2
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+def get_connection():
+    return psycopg2.connect(DATABASE_URL)
 # ==========================================
 # DATABASE INITIALIZATION
 # ==========================================
-
 def init_db():
 
-    connection = sqlite3.connect(
-        "database.db"
-    )
-
+    connection = get_connection()
     cursor = connection.cursor()
 
     # USERS TABLE
-
-    cursor.execute(
-        """
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
 
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
 
             username TEXT NOT NULL,
 
@@ -32,32 +31,29 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
         )
-        """
-    )
+    """)
 
     # PREDICTIONS TABLE
-
-    cursor.execute(
-        """
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS predictions (
 
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
 
             user_id INTEGER,
 
-            global_reactive_power REAL,
+            global_reactive_power DOUBLE PRECISION,
 
-            voltage REAL,
+            voltage DOUBLE PRECISION,
 
-            global_intensity REAL,
+            global_intensity DOUBLE PRECISION,
 
-            sub_metering_1 REAL,
+            sub_metering_1 DOUBLE PRECISION,
 
-            sub_metering_2 REAL,
+            sub_metering_2 DOUBLE PRECISION,
 
-            sub_metering_3 REAL,
+            sub_metering_3 DOUBLE PRECISION,
 
-            predicted_power REAL,
+            predicted_power DOUBLE PRECISION,
 
             category TEXT,
 
@@ -69,13 +65,10 @@ def init_db():
             REFERENCES users(id)
 
         )
-        """
-    )
+    """)
 
     connection.commit()
-
+    cursor.close()
     connection.close()
 
-    print(
-        "Database initialized successfully!"
-    )
+    print("PostgreSQL Database initialized successfully!")
